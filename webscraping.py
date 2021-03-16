@@ -24,13 +24,17 @@ def doPost(uria, edukia, goiburuak):
     return erantzuna
 
 
-def printeskaera(uria, metodo):
+def printeskaera(uria, metodo,datuak):
     global kop
 
     print("\n\n·········· "+str(kop) + '.ESKAERA' + " ··········")
     kop += 1
     print('\n\nMetodoa: ' + metodo)
     print("URIa : " + uria)
+    if len(datuak)>0:
+        print(" <-- Datuak --> ")
+        for datua in datuak:
+            print(datua + ": " + datuak[datua])
 
 
 def printerantzuna(erantzuna):
@@ -38,8 +42,13 @@ def printerantzuna(erantzuna):
     deskribapena = erantzuna.reason
     print("\n~ ERANTZUNA ~")
     print("Status : "+str(kodea) + " " + deskribapena)
-    print("Goiburuak --> ")
-    print(erantzuna.headers)
+    print(" <-- Goiburuak --> ")
+    for goiburua in erantzuna.headers:
+        print(goiburua + ": " + erantzuna.headers[goiburua])
+    if erantzuna.status_code == 200 and "JON GONDRA LUZURIAGA" in str(erantzuna.content):
+        edukia = erantzuna.content
+        print(" <-- Edukia --> ")
+        print(edukia)
 
 # MAIN
 
@@ -52,7 +61,7 @@ def kautotu():
                  'Content-Length': '0', "Cookie": cookie}
     uria= "https://egela.ehu.eus"
 
-    printeskaera(uria, 'GET')
+    printeskaera(uria, 'GET', datuak)
     erantzuna = doGet(uria, goiburuak)
     printerantzuna(erantzuna)
     if erantzuna.status_code == 303:
@@ -63,7 +72,7 @@ def kautotu():
         print("Cookie : "+cookie)
         goiburuak["Cookie"] = cookie
 
-    printeskaera(uria, 'GET')
+    printeskaera(uria, 'GET', datuak)
     erantzuna = doGet(uria, goiburuak)
     printerantzuna(erantzuna)
     if erantzuna.status_code == 303:
@@ -75,7 +84,7 @@ def kautotu():
         goiburuak["Cookie"] = cookie
 
     while not kautotuta:
-        printeskaera(uria, 'POST')
+        printeskaera(uria, 'POST', datuak)
         erantzuna = doPost(uria, datuak, goiburuak)
         printerantzuna(erantzuna)
         kautotuta = (erantzuna.status_code == 200 and "JON GONDRA LUZURIAGA" in str(erantzuna.content))
@@ -101,9 +110,10 @@ def kautotu():
 
 def irakasgaia():
     uria = "https://egela.ehu.eus/course/view.php?id=42336"
+    datuak = ""
     goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded',
                  'Content-Length': '0', "Cookie": cookie}
-    printeskaera(uria, 'GET')
+    printeskaera(uria, 'GET', datuak)
     erantzuna = doGet(uria, goiburuak)
     printerantzuna(erantzuna)
     soup = BeautifulSoup(erantzuna.content, "html.parser")
