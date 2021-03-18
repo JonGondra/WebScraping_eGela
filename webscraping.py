@@ -61,28 +61,17 @@ def kautotu():
                  'Content-Length': '0', "Cookie": cookie}
     uria= "https://egela.ehu.eus"
 
-    printeskaera(uria, 'GET', datuak)
-    erantzuna = doGet(uria, goiburuak)
-    printerantzuna(erantzuna)
-    if erantzuna.status_code == 303:
-        uria = erantzuna.headers['Location']
-        print("Location : " + uria)
-    if "Set-Cookie" in erantzuna.headers:
-        cookie = erantzuna.headers["Set-Cookie"].split(';')[0]
-        print("Cookie : "+cookie)
-        goiburuak["Cookie"] = cookie
+    # 1.ESKAERA (https://egela.ehu.eus) GET, 303 See Other
 
-    printeskaera(uria, 'GET', datuak)
-    erantzuna = doGet(uria, goiburuak)
-    printerantzuna(erantzuna)
-    if erantzuna.status_code == 303:
-        uria = erantzuna.headers['Location']
-        print("Location : " + uria)
-    if "Set-Cookie" in erantzuna.headers:
-        cookie = erantzuna.headers["Set-Cookie"].split(';')[0]
-        print("Cookie : " + cookie)
-        goiburuak["Cookie"] = cookie
+    uria, goiburuak = prozesatuesk(uria, datuak, goiburuak)
 
+    # 2.ESKAERA (https://egela.ehu.eus/login/index.php) GET, 200 OK
+
+    uria, goiburuak = prozesatuesk(uria, datuak, goiburuak)
+
+    # 3.ESKAERA (https://egela.ehu.eus/login/index.php) POST erabiltzailea, pasahitza, 303 See Other
+    # 4.ESKAERA (https://egela.ehu.eus/login/index.php?testsession=56558) POST, 303 See Other
+    # 5.ESKAERA (https://egela.ehu.eus/) POST, 200 OK and "JON GONDRA LUZURIAGA" erantzunean dago
     while not kautotuta:
         printeskaera(uria, 'POST', datuak)
         erantzuna = doPost(uria, datuak, goiburuak)
@@ -106,6 +95,20 @@ def kautotu():
             pasahitza = input()
             datuak = {'username': erabiltzialea, 'password': pasahitza}
             input("SARTU")
+
+
+def prozesatuesk(uria, datuak, goiburuak):
+    printeskaera(uria, 'GET', datuak)
+    erantzuna = doGet(uria, goiburuak)
+    printerantzuna(erantzuna)
+    if erantzuna.status_code == 303:
+        uria = erantzuna.headers['Location']
+        print("Location : " + uria)
+    if "Set-Cookie" in erantzuna.headers:
+        cookie = erantzuna.headers["Set-Cookie"].split(';')[0]
+        print("Cookie : " + cookie)
+        goiburuak["Cookie"] = cookie
+    return uria, goiburuak
 
 
 def irakasgaia():
