@@ -112,6 +112,7 @@ def prozesatuesk(uria, datuak, goiburuak):
 
 
 def irakasgaia():
+    #hardcoded
     uria = "https://egela.ehu.eus/course/view.php?id=42336"
     datuak = ""
     goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded',
